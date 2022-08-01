@@ -11,11 +11,15 @@ from typing import List
 class Solution:
     def minimumTime(self, n: int, relations: List[List[int]], time: List[int]) -> int:
         res = self.buildGraph(relations, time)
-        nodeMap = res["nodeMap"]
         entries = res["entries"]
-        endPoints = res["endPoints"]
+        return max([self.getCost(entry) for entry in entries])
 
-    def buildGraph(relations: List[List[int]], time:List[int]):
+    def getCost(self, entry):
+        if len(entry.next) == 0:
+            return entry.cost
+        return entry.cost + max([self.getCost(node) for node in entry.next])
+
+    def buildGraph(self, relations: List[List[int]], time:List[int]):
         nodeMap = {}
         for relation in relations:
             prevIndex = relation[0]
@@ -34,8 +38,8 @@ class Solution:
                 nodeMap[nextIndex] = nextNode
             prevNode.next.append(nextNode)
             nextNode.prev.append(prevNode)
-        entries = filter(lambda node: len(node.prev) == 0, nodeMap.values())
-        endPoints = filter(lambda node: len(node.next) == 0, nodeMap.values())
+        entries = [node for node in filter(lambda node: len(node.prev) == 0, nodeMap.values())]
+        endPoints = [node for node in filter(lambda node: len(node.next) == 0, nodeMap.values())]
         return {
             "nodeMap": nodeMap,
             "entries": entries,
@@ -48,5 +52,13 @@ class Node:
         self.cost = cost
         self.prev = []
         self.next = []
+
+    def __str__(self) -> str:
+        return "{}".format(self.cost)
 # @lc code=end
+
+if __name__ == "__main__":
+    s = Solution()
+    print(s.minimumTime(5, [[1,5],[2,5],[3,5],[3,4],[4,5]], [1,2,3,4,5]))
+    print(s.minimumTime(3, [[1,3],[2,3]], [3,2,5]))
 
