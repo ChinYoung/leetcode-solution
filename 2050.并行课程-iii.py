@@ -10,8 +10,11 @@ from typing import List
 
 class Solution:
     def minimumTime(self, n: int, relations: List[List[int]], time: List[int]) -> int:
+        if len(relations) == 0:
+            return max(time)
         res = self.buildGraph(relations, time)
         entries = res["entries"]
+        print(entries)
         return max([self.getCost(entry) for entry in entries])
 
     def getCost(self, entry):
@@ -61,4 +64,5 @@ if __name__ == "__main__":
     s = Solution()
     print(s.minimumTime(5, [[1,5],[2,5],[3,5],[3,4],[4,5]], [1,2,3,4,5]))
     print(s.minimumTime(3, [[1,3],[2,3]], [3,2,5]))
+    print(s.minimumTime(1, [], [1]))
 
