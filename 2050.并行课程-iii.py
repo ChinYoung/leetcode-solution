@@ -5,25 +5,43 @@
 #
 
 # @lc code=start
+from cmath import cos
 from typing import List
 
 
 class Solution:
+    def __init__(self) -> None:
+        self.maxLog = {}
+
     def minimumTime(self, n: int, relations: List[List[int]], time: List[int]) -> int:
         if len(relations) == 0:
             return max(time)
-        res = self.buildGraph(relations, time)
+        self.maxLog = {}
+        res = self.buildGraph(n, relations, time)
         entries = res["entries"]
-        print(entries)
-        return max([self.getCost(entry) for entry in entries])
+        costs = [self.getCost(entry) for entry in entries]
+        return max(costs)
 
     def getCost(self, entry):
+        index = entry.index
+        costInLog = self.maxLog.setdefault(index, None)
+        if costInLog:
+            return costInLog
+        cost = 0
         if len(entry.next) == 0:
-            return entry.cost
-        return entry.cost + max([self.getCost(node) for node in entry.next])
+            cost = entry.cost
+        else:
+            cost = entry.cost + max([self.getCost(node) for node in entry.next])
+        self.maxLog[index] = cost
+        return cost
 
-    def buildGraph(self, relations: List[List[int]], time:List[int]):
+    def buildGraph(self,n:int, relations: List[List[int]], time:List[int]):
         nodeMap = {}
+        for i in range(n):
+            index = i + 1
+            cost = time[index - 1]
+            node = Node(index, cost)
+            nodeMap[index] = node
         for relation in relations:
             prevIndex = relation[0]
             nextIndex = relation[1]
@@ -65,4 +83,5 @@ if __name__ == "__main__":
     print(s.minimumTime(5, [[1,5],[2,5],[3,5],[3,4],[4,5]], [1,2,3,4,5]))
     print(s.minimumTime(3, [[1,3],[2,3]], [3,2,5]))
     print(s.minimumTime(1, [], [1]))
+    print(s.minimumTime(3, [[2,3]], [3,1,1]))
 
