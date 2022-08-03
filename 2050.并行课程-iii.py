@@ -23,6 +23,7 @@ class Solution:
         return max(costs)
 
     def getCost(self, entry):
+        # log, 剪枝
         index = entry.index
         costInLog = self.maxLog.setdefault(index, None)
         if costInLog:
@@ -35,6 +36,7 @@ class Solution:
         self.maxLog[index] = cost
         return cost
 
+    # 建立关系树
     def buildGraph(self,n:int, relations: List[List[int]], time:List[int]):
         nodeMap = {}
         for i in range(n):
@@ -59,6 +61,7 @@ class Solution:
                 nodeMap[nextIndex] = nextNode
             prevNode.next.append(nextNode)
             nextNode.prev.append(prevNode)
+        # 找出起点
         entries = [node for node in filter(lambda node: len(node.prev) == 0, nodeMap.values())]
         endPoints = [node for node in filter(lambda node: len(node.next) == 0, nodeMap.values())]
         return {
