@@ -18,6 +18,7 @@ class TreeNode:
 class Solution:
     def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
         pPath = self.searchNode(root, p.val)
+        # 找出到 p 的 path 后, 从最大深度的节点开始, 检查是否能找到到 q 的路径, 如果可以找到, 则该 node 为公共祖先
         while len(pPath) > 0:
             pathNode = pPath.pop(len(pPath)-1)
             ancestor = pathNode
@@ -25,6 +26,7 @@ class Solution:
                 return ancestor
         return ancestor
 
+    # 找出从 root, 开始到指定值的路径, 从左到右对应从上到下的顺序
     def searchNode(self, root:TreeNode, val):
         current = root
         searchStack = []
@@ -49,6 +51,7 @@ class Solution:
 
 
 # @lc code=end
+# 从 List 生成二叉树
 def generateTree(all:List[int]):
     root:TreeNode = None
     nodeMap ={}
@@ -73,6 +76,7 @@ def generateTree(all:List[int]):
                 node.right = rightNode
     return root
 
+# 依照广度优先的顺序print一棵树
 def bfsPrint(root:TreeNode):
     nodeQueue = [root]
     current = None
@@ -84,6 +88,7 @@ def bfsPrint(root:TreeNode):
         if current.right:
             nodeQueue.append(current.right)
 
+# 根据值获取树中的某个节点
 def getNode(root, val):
     nodeStack = [root]
     current:TreeNode = None
@@ -97,6 +102,7 @@ def getNode(root, val):
             nodeStack.append(current.right)
     return None
 
+# 格式化 print 栈, 栈顶在 List 尾
 def printStack(stack:List[TreeNode]):
     print('[', end='')
     for i in stack:
