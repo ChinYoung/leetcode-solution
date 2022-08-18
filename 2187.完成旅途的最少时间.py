@@ -10,31 +10,29 @@ from typing import List
 
 class Solution:
     def minimumTime(self, time: List[int], totalTrips: int) -> int:
-        sortedTime = sorted(time)
-        maxTripLength = totalTrips * sortedTime[-1]
+        maxTripLength = totalTrips * max(time)
         start = 1
         end = maxTripLength
         while end > start:
-            mid = start + 0.5 * (end - start)
-            trips = self.getTrips(sortedTime, mid)
-            if trips >= totalTrips:
+            length = end - start
+            mid = start +  length // 2
+            if self.verifyMid(time, mid, totalTrips):
                 end = mid
             else:
-                start += 1
+                start = mid+1
         return start
 
-    def getTrips(self, time, currentTime):
+    def verifyMid(self, time, currentTime, totalTrips):
         final = 0
         for i in time:
             if i <= currentTime:
                 final += (currentTime // i)
-            else:
-                break
-        return final
+        return final >= totalTrips
 
 # @lc code=end
 
 if __name__ =="__main__":
     s = Solution()
     print(s.minimumTime([5,10,10], 9))
+    print(s.minimumTime([1,2,3], 5))
 
