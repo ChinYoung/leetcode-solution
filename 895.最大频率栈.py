@@ -35,8 +35,6 @@ class FreqStack:
             del self.matrix[currentTimes]
         nextRow[val] = True
 
-        # TEST
-        # print(' ', self.stack)
 
     def pop(self) -> int:
         maxCount = max(self.matrix.keys())
@@ -45,10 +43,10 @@ class FreqStack:
         popELe = 0
         for val in currentRow.keys():
             indexList = self.indexListMap[val]
-            for index in indexList:
-                if index >= maxIndex:
-                    maxIndex = index
-                    popELe = val
+            valMax = indexList[-1]
+            if valMax >= maxIndex:
+                maxIndex = valMax
+                popELe = val
         self.indexListMap[popELe].pop(-1)
         if len(self.indexListMap[popELe]) == 0:
             del self.indexListMap[popELe]
@@ -77,6 +75,6 @@ if __name__ == "__main__":
         if operaList[index] == 'push':
             s.push(i[0])
             continue
-        s.pop()
+        print(s.pop())
 
 
