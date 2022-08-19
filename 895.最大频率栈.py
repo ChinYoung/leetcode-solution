@@ -5,59 +5,30 @@
 #
 
 # @lc code=start
-from typing import Dict, List
+
+
+import collections
 
 
 class FreqStack:
     def __init__(self):
-        self.indexListMap = {}
-        self.matrix = {}
-        self.currentIndex = 0
-        # TEST
+        self.maxFreq = 0
+        self.trace = collections.defaultdict(list)
+        self.freqMap = collections.Counter()
 
     def push(self, val: int) -> None:
-        # TEST
-
-        indexList:List[int] = self.indexListMap.setdefault(val, [])
-        currentTimes = len(indexList)
-        nextTimes =currentTimes + 1
-
-        indexList.append(self.currentIndex)
-        self.currentIndex += 1
-
-        currentRow = self.matrix.setdefault(currentTimes, {})
-        nextRow = self.matrix.setdefault(nextTimes, {})
-        try:
-            del currentRow[val]
-        except KeyError:
-            pass
-        if len(currentRow)==0:
-            del self.matrix[currentTimes]
-        nextRow[val] = True
-
+        newFreq = self.freqMap[val] + 1
+        self.freqMap[val] = newFreq
+        if self.freqMap[val] > self.maxFreq:
+            self.maxFreq = self.freqMap[val]
+        self.trace[newFreq].append(val)
 
     def pop(self) -> int:
-        maxCount = max(self.matrix.keys())
-        currentRow:Dict[int:int] = self.matrix[maxCount]
-        maxIndex = 0
-        popELe = 0
-        for val in currentRow.keys():
-            indexList = self.indexListMap[val]
-            valMax = indexList[-1]
-            if valMax >= maxIndex:
-                maxIndex = valMax
-                popELe = val
-        self.indexListMap[popELe].pop(-1)
-        if len(self.indexListMap[popELe]) == 0:
-            del self.indexListMap[popELe]
-        if maxCount > 1:
-            nextRow = self.matrix.setdefault(maxCount - 1, {})
-            nextRow[popELe] = True
-        del currentRow[popELe]
-        if len(currentRow) == 0:
-            del self.matrix[maxCount]
-        return popELe
-
+        ele = self.trace[self.maxFreq].pop()
+        self.freqMap[ele] -= 1
+        if not self.trace[self.maxFreq]:
+            self.maxFreq -= 1
+        return ele
 # Your FreqStack object will be instantiated and called as such:
 # obj = FreqStack()
 # obj.push(val)
