@@ -17,6 +17,7 @@ class Solution:
                     hour = i
                     minute = j
                     if minute < 60 and hour < 12:
+                        # print(num, hour, minute)
                         minuteStr = '0{}'.format(minute) if minute < 10 else '{}'.format(minute)
                         results.append('{}:{}'.format(hour, minuteStr))
         return results
@@ -50,10 +51,8 @@ class Solution:
             current += 1
         return map(lambda x:x[0], combinations)
 
-    def countMinute(self, tunedOn:int):
-        pass
 # @lc code=end
 
 if __name__ == "__main__":
     s = Solution()
-    print(s.readBinaryWatch(2))
+    print(s.readBinaryWatch(9))
