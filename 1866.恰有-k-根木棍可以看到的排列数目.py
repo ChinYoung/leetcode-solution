@@ -17,33 +17,39 @@ class Solution:
         self.factorialLog = {}
         self.possibilityLog = {}
 
+    def rearrangeSticksX(self, n: int, k: int) -> int:
+        mod = 10**9+7
+        dp = [[0]*(k+1) for _ in range(n+1)]
+        dp[0][0] = 1
+        for i in range(1, n+1):
+            for j in range(1, k+1):
+                dp[i][j] = (dp[i-1][j-1]+((i-1)*dp[i-1][j]))
+        return dp[n][k]
+
+
     def rearrangeSticks(self, n: int, k: int) -> int:
-        # print(n, k)
+        mod = 1000000007
         row = self.log.setdefault(n, {})
         try:
             return row[k]
         except KeyError:
-            if k == 1:
-                if n == 1:
-                    row[k] = 1
-                    return 1
-                else:
-                    result = self.getFactorial(n-1)
-                    row[k] = result
-                    return result
-            if n < k:
-                row[k] = 0
-                return 0
             if n == k:
                 row[k] = 1
                 return 1
+            if n < k:
+                row[k] = 0
+                return 0
+            if k == 1:
+                result = (self.getFactorial(n-1))
+                row[k] = result
+                return result
             total = 0
             selected = 1
             while (n - selected) >= (k -1):
                 total += (self.getPossibilities(n, selected) * self.rearrangeSticks(n-selected, k-1))
                 selected += 1
-            row[k] = total
-            result = total % (pow(10, 9) + 7)
+            result = total
+            row[k] = result
             return result
 
     def getFactorial(self, n):
@@ -79,7 +85,5 @@ class Solution:
 if __name__ == "__main__":
     s = Solution()
     # print(s.getPossibilities(4, 2))
-    print(s.rearrangeSticks(3,2))
-    print(s.rearrangeSticks(5,5))
-    print(s.rearrangeSticks(20,11))
-    print(s.rearrangeSticks(105,20))
+    print(s.rearrangeSticksX(29,12))
+    print(s.rearrangeSticks(29,12))
