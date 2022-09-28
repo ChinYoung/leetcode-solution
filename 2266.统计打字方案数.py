@@ -6,16 +6,18 @@
 
 # @lc code=start
 class Solution:
+    def __init__(self) -> None:
+        self.posMap = {4: {}, 3: {}}
+
     def countTexts(self, pressedKeys: str) -> int:
-        p1 = 1
-        p2 = 2
-        p3 = 4
-        p4 = 7
         pass
 
     def getPossibility(self, length, max):
-        if length == 1 or max == 1:
-            return 1
+        try:
+            return self.posMap[max][length]
+        except:
+            log = [0 for i in range(max)]
+            pass
 
 
 1, 1         1    2
