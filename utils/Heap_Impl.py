@@ -1,9 +1,7 @@
-import queue
-from select import select
 from typing import List
 
-
-class Z_Heap:
+# 最大堆
+class Max_Heap:
     # (最大堆)节点比较方法, 可重写, 相等返回0, 胜出返回1, 否则返回-1
     @classmethod
     def compare(cls, first: int, second: int):
@@ -20,12 +18,14 @@ class Z_Heap:
         return len(self.__data) - 1
 
     @property
-    def node_count(self):
+    def length(self):
         return len(self.__data)
 
     # 堆顶元素
     @property
     def best(self):
+        if self.length == 0:
+            return None
         return self.__data[0]
 
     def __str__(self) -> str:
@@ -33,9 +33,9 @@ class Z_Heap:
     
     # 从最后一个节点开始, 进行排序
     def __heapify__(self):
-        if self.node_count < 2:
+        if self.length < 2:
             return
-        for i in reversed(range(self.node_count)):
+        for i in reversed(range(self.length)):
             parent = self.__get_parent__(i)
             if parent != -1:
                 self.__sift_down__(parent)
@@ -92,7 +92,7 @@ class Z_Heap:
 
     # 替换堆顶元素
     def replace(self, num):
-        if self.node_count == 0:
+        if self.length == 0:
             return
         replaced = self.__data[0]
         self.__data[0] = num
@@ -118,9 +118,8 @@ class Z_Heap:
         self.__data.append(num)
         self.__sift_up__(self.max_index)
 
-
 # 最小堆
-class A_Heap(Z_Heap):
+class Min_Heap(Max_Heap):
     @classmethod
     def compare(cls, first: int, second: int):
         return super().compare(first, second) * -1
@@ -128,9 +127,9 @@ class A_Heap(Z_Heap):
 
 if __name__ == "__main__":
     list_o = [1, 2, 3, 44, 55, 66, 77, 33, 20, 12, 19, 35, 36, 21]
-    a = A_Heap(list_o)
+    a = Min_Heap(list_o)
     print(a)
-    z = Z_Heap(list_o)
+    z = Max_Heap(list_o)
     print(z)
 
 
