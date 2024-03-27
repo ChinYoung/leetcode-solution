@@ -14,33 +14,29 @@ from typing import List
 
 class Solution:
     def maximumMinutes(self, grid: List[List[int]]) -> int:
-        self.grid = grid
-        self.max_row = len(grid) - 1
-        self.max_col = len(grid[0]) - 1
-        step = 0
-        required_step = self.count_step([0,0], [self.max_row, self.max_col], self.grid)
-        prev_required_step = required_step
-        while required_step > 0:
+        fire_map = [[0 for i in range(len(grid[0]))] for j in grid]
+        cloned_grid = [[cell for cell in row] for row in grid]
+        expanded = self.expand(cloned_grid)
+        step = 1
+        for i in expanded:
+            fire_map[i[0]][i[1]] = step
+        while len(expanded) > 0:
+            expanded = self.expand(cloned_grid)
             step += 1
-            expanded = self.expand()
-            prev_required_step = required_step
-            required_step = self.count_step([0,0], [self.max_row, self.max_col], self.grid)
-            if expanded == 0 and required_step > 0:
-                return 1e9
-        minutes = step- prev_required_step
-        return minutes if minutes > 0 else -1
+            for i in expanded:
+                fire_map[i[0]][i[1]] = step
+        
+
     
-    def expand(self):
+    def expand(self, grid: List[List[int]]):
         edge_cells = []
-        expanded = 0
-        for rowIndex, row in enumerate(self.grid):
+        for rowIndex, row in enumerate(grid):
             for colIndex, cell in enumerate(row):
                 if cell == 1:
-                    edge_cells.extend(self.get_next_cells([rowIndex, colIndex], self.grid))
+                    edge_cells.extend(self.get_next_cells([rowIndex, colIndex], grid))
         for i in edge_cells:
-            self.grid[i[0]][i[1]] = 1
-            expanded += 1
-        return expanded
+            grid[i[0]][i[1]] = 1
+        return edge_cells
 
     def count_step(self, pointA: List[int], pointB: List[int], cur_grid: List[List[int]]):
         cloned = [self.clone(i) for i  in cur_grid]
@@ -62,9 +58,11 @@ class Solution:
         return [i for i in l]
 
     def get_next_cells(self, cell: List[int], grid: List[List[int]]):
+        max_row = len(grid) - 1
+        max_col = len(grid[0]) - 1
         return list(
             filter(
-                lambda x: x[0] >=0 and x[0] <= self.max_row and x[1] >=0 and x[1] <= self.max_col and grid[x[0]][x[1]] == 0 ,
+                lambda x: x[0] >=0 and x[0] <= max_row and x[1] >=0 and x[1] <= max_col and grid[x[0]][x[1]] == 0 ,
                 [
                     [cell[0]+1, cell[1]],
                     [cell[0]-1, cell[1]],
