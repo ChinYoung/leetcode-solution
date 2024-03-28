@@ -58,12 +58,14 @@ class Solution:
     
     def generate_fire_map(self, grid: List[List[int]]):
         fire_map: Dict[Dict] ={}
+        # cloned_map: Dict[Dict] ={}
         cloned_grid = self.clone(grid)
         on_fire = []
         step = 0
         for row in range(len(grid)):
             for col in range(len(grid[0])):
-                fire_map.setdefault(row, {})[col] = 0
+                fire_map.setdefault(row, {})[col] = grid[row][col]
+                # cloned_map.setdefault(row, {})[col] = grid[row][col]
                 if grid[row][col] == 1:
                     on_fire.append([row, col])
         while len(on_fire) > 0:
