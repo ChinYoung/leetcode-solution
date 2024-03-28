@@ -14,19 +14,57 @@ from typing import List
 
 class Solution:
     def maximumMinutes(self, grid: List[List[int]]) -> int:
-        fire_map = [[0 for i in range(len(grid[0]))] for j in grid]
-        cloned_grid = [[cell for cell in row] for row in grid]
+        MAX = int(1e9)
+        self.safe_row = len(grid)-1
+        self.safe_col = len(grid[0])-1
+        grid[self.safe_row][self.safe_col] == -1
+        self.fire_map = self.generate_fire_map(grid)
+        step = 1
+        options = [[[row, col], self.clone(grid), MAX if self.fire_map[row][col] == 0 else self.fire_map[row][col] - 1 - step] for [row, col] in self.get_next_cells([0,0], grid)]
+        res = []
+        path_gap_log = {}
+        while len(options) > 0:
+            step += 1
+            new_next = []
+            new_next_map = {}
+            for [cell, moved_grid, gap] in options:
+                if gap < 0:
+                    continue
+                next_cells = self.get_next_cells(cell, moved_grid)
+                for [row, col] in next_cells:
+                    id = str(row) + ',' + str(col)
+                    if new_next_map.setdefault(id, None) != None:
+                        pass
+                    new_grid = self.clone(moved_grid)
+                    new_grid[row][col] = 5
+                    allowed_gap = MAX if gap == MAX and self.fire_map[row][col] ==0 else min(gap, self.fire_map[row][col]-1-step)
+                    if row == self.safe_row and col == self.safe_col:
+                        allowed_gap = MAX if gap == MAX else min(gap, self.fire_map[row][col]-step)
+                        res.append(allowed_gap)
+                        continue
+                    new_next_map[id] = True
+                    new_next.append([[row,col], new_grid, allowed_gap])
+            options = new_next
+        if len(res) == 0:
+            return -1
+        return max(res) if max(res) >=0 else -1
+
+    def clone(self, grid:List[List[int]]):
+        return [[j for j in i] for i in grid]
+    
+    def generate_fire_map(self, grid: List[List[int]]):
+        fire_map = self.clone(grid)
+        cloned_grid = self.clone(grid)
         expanded = self.expand(cloned_grid)
         step = 1
-        for i in expanded:
-            fire_map[i[0]][i[1]] = step
+        for [row, col] in expanded:
+            fire_map[row][col] = step
         while len(expanded) > 0:
             expanded = self.expand(cloned_grid)
             step += 1
-            for i in expanded:
-                fire_map[i[0]][i[1]] = step
-        
-
+            for [row, col] in expanded:
+                fire_map[row][col] = step
+        return fire_map
     
     def expand(self, grid: List[List[int]]):
         edge_cells = []
@@ -34,28 +72,9 @@ class Solution:
             for colIndex, cell in enumerate(row):
                 if cell == 1:
                     edge_cells.extend(self.get_next_cells([rowIndex, colIndex], grid))
-        for i in edge_cells:
-            grid[i[0]][i[1]] = 1
+        for [row,col] in edge_cells:
+            grid[row][col] = 1
         return edge_cells
-
-    def count_step(self, pointA: List[int], pointB: List[int], cur_grid: List[List[int]]):
-        cloned = [self.clone(i) for i  in cur_grid]
-        next_cells = self.get_next_cells(pointA, cloned)
-        cloned[pointA[0]][pointA[1]] = 9
-        step = 1
-        while len(next_cells) > 0:
-            new_next = []
-            for i in next_cells:
-                cloned[i[0]][i[1]] = 9
-                new_next.extend(self.get_next_cells(i, cloned))
-            step += 1
-            next_cells = new_next
-            if pointB in next_cells:
-                return step
-        return -1
-
-    def clone(self, l: List[any]):
-        return [i for i in l]
 
     def get_next_cells(self, cell: List[int], grid: List[List[int]]):
         max_row = len(grid) - 1
@@ -76,6 +95,10 @@ class Solution:
 # @lc code=end
 if __name__ =="__main__":
     s = Solution()
-    grid = [[0,2,0,0,0,0,0],[0,0,0,2,2,1,0],[0,2,0,0,1,2,0],[0,0,2,2,2,0,2],[0,0,0,0,0,0,0]]
+    # grid = [[0,2,0,0,1],[0,2,0,2,2],[0,2,0,0,0],[0,0,2,2,0],[0,0,0,0,0]]
+    # print(s.maximumMinutes(grid))
+    # grid = [[0,1],[0,2],[0,0],[2,0]]
+    # print(s.maximumMinutes(grid))
+    grid = [[0,2,0,0,0,0,0,0,0,2,0,2,0,2,2,0,2,0,0,0,0,0],[0,0,0,2,2,2,0,2,0,0,0,0,0,0,0,0,0,0,2,2,2,2],[0,2,2,2,2,2,2,2,2,0,2,2,2,0,2,2,2,0,0,2,0,2],[0,0,2,0,0,0,2,0,2,2,2,2,2,2,2,2,2,2,0,0,0,0],[2,0,0,0,2,0,0,0,0,2,0,0,0,0,0,0,0,2,2,0,2,0],[0,0,2,0,2,0,2,2,0,0,0,2,2,2,2,0,2,2,0,0,2,0],[2,2,2,0,2,2,2,2,2,2,0,0,0,0,2,0,0,2,2,0,2,0],[0,0,0,0,0,0,0,0,0,2,0,2,0,2,2,2,2,2,2,0,2,0],[2,0,2,0,2,0,2,0,2,2,0,2,0,0,0,0,2,0,2,0,2,2],[0,0,2,0,2,0,2,0,2,2,0,2,2,0,2,0,0,0,2,2,2,2],[0,2,2,0,2,0,2,0,2,1,0,0,2,2,2,0,2,0,0,2,0,0],[0,2,2,0,2,2,2,0,2,2,2,0,0,0,2,0,2,2,0,0,0,2],[0,2,2,0,2,0,0,0,0,0,2,2,0,2,2,2,1,2,2,0,2,1],[0,2,2,0,2,2,2,0,2,0,2,2,0,0,0,0,2,2,0,0,0,2],[0,2,0,0,2,0,0,0,2,0,2,0,0,2,0,2,2,0,0,2,0,0],[2,2,2,0,2,2,0,2,2,0,2,2,0,2,2,2,2,2,0,2,2,0],[0,0,0,0,2,2,0,2,0,0,2,2,0,0,0,0,0,2,0,2,0,0]]
     print(s.maximumMinutes(grid))
 
