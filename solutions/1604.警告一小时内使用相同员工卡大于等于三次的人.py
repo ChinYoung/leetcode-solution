@@ -15,15 +15,40 @@ class Solution:
         log_map: Dict[List] = {}
         for i in range(len(keyName)):
             k, t = keyName[i], keyTime[i]
-            m = self.toMinute(t)
-            k_log = log_map.setdefault(k, [0] * 60 * 24)
-            k_log[m] = 1
             if res_log.setdefault(k, False):
                 continue
-            if self.search_in_hour(m, k_log, k):
-                res_log[k] = True
-                res.append(k)
+            m = self.toMinute(t)
+            k_log = log_map.setdefault(k, [])
+            log_array = self.insert(m, k_log)
+            log_map[k] = log_array
+            for i in range(len(log_map[k]) - 2):
+                if log_array[i+2] - log_array[i] <= 60:
+                    res_log[k] = True
+                    res.append(k)
+                    break
         return sorted(res)
+
+    def insert(self, m: int, a: List[int]):
+        if len(a) == 0:
+            return [m]
+        if m <= a[0]:
+            return [m] + a
+        if m >= a[-1]:
+            return a + [m]
+        if len(a) == 2:
+            return [a[0], m, a[1]]
+        h = 0
+        e = len(a) - 1
+        i = int((e-h) / 2)
+        while True:
+            if e - h == 1:
+                return a[:h+1] + [m] + a[e:]
+            if a[i] >= m:
+                e = i
+                i = int((e-h) / 2)
+            else:
+                h = i
+                i = i + int((e-h) / 2)
 
     def search_in_hour(self, m: int, log: List[int], k):
         local_log = []
@@ -52,6 +77,7 @@ class Solution:
 
 if __name__ == "__main__":
     s = Solution()
+    # print(s.insert(55, [1,2,3,4,6,17,88,999]))
     keyName = ["daniel","daniel","daniel","luis","luis","luis","luis"]
     keyTime = ["10:00","10:40","11:00","09:00","11:00","13:00","15:00"]
     print(s.alertNames(keyName, keyTime))
